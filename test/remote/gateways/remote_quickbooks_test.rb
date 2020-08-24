@@ -141,6 +141,24 @@ class RemoteTest < Test::Unit::TestCase
     assert_success response
   end
 
+  def test_successful_purchase_without_state_address
+    options = {
+      order_id: '1',
+      billing_address:
+        {
+          zip: 90210,
+          # the test will pass if these values are nil
+          # but they fail when passed as empty strings
+          state: '',
+          country: ''
+        }
+    }
+
+    response = @gateway.purchase(@amount, @credit_card, options)
+    assert_success response
+    assert_equal 'CAPTURED', response.message
+  end
+
   def test_refresh
     response = @gateway.refresh
     assert_success response
